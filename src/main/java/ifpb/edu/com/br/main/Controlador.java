@@ -19,8 +19,8 @@ public class Controlador {
     private UsuarioService us = new UsuarioService();
 
     Controlador() {
-        bufferdelete = new ArrayBlockingQueue<Integer>(50);
-        bufferatualizar = new ArrayBlockingQueue<Integer>(50);
+        bufferdelete = new ArrayBlockingQueue<Integer>(3);
+        bufferatualizar = new ArrayBlockingQueue<Integer>(3);
     }
 
     Runnable salvar = new Runnable() {
@@ -28,12 +28,13 @@ public class Controlador {
         @Override
         public void run() {
             try {
-                //sem.acquire();
+                sem.acquire();
                 Usuario u = new Usuario(us.IdUsuario() + 1, "teste");
                 us.salvar(u);
-               // System.out.println("save: " + u.toString());
+               
+               System.out.println("save: " + u.toString());
                 bufferatualizar.put(u.getId());
-                //sem.release();
+                sem.release();
             } catch (SQLException ex) {
                 Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
             } catch (InterruptedException ex) {
@@ -50,7 +51,7 @@ public class Controlador {
                 int id = bufferatualizar.take();
                 us.atualizar(id);
                 bufferdelete.put(id);
-                System.out.println("atualizou: " + id);
+               // System.out.println("atualizou: " + id);
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SQLException ex) {
@@ -66,10 +67,10 @@ public class Controlador {
             try {
                 int id = bufferdelete.take();
                 us.deletar(id);
-                System.out.println("deleted: " + id);
+               // System.out.println("deleted: " + id);
                 if (id >= 100) {
                     long tempofinal = System.currentTimeMillis() - tempo;
-                    System.out.println("Tempo final: " + tempofinal);
+                 //   System.out.println("Tempo final: " + tempofinal);
                 }
             } catch (InterruptedException ex) {
                 Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
