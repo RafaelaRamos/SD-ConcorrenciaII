@@ -1,3 +1,4 @@
+
 /*
  * To change this license header, choose License Headers in Project Properties.
  * To change this template file, choose Tools | Templates
@@ -31,12 +32,12 @@ public class NewMain {
     private static UsuarioService us = new UsuarioService();
     private static ArrayBlockingQueue<Integer> bufferdelete = new ArrayBlockingQueue<Integer>(3);
     private static ArrayBlockingQueue<Integer> bufferatualizar = new ArrayBlockingQueue<Integer>(3);
-
-    ;
+    private static int ultimo = 1;
 
     public static void main(String[] args) throws SQLException, InterruptedException {
 
         Controlador controlador = new Controlador();
+
         Runnable scan = new Runnable() {
 
             @Override
@@ -74,7 +75,7 @@ public class NewMain {
 
                     condition.await();
                 }
-            }  finally {
+            } finally {
                 lock.unlock();
 
             }
@@ -85,15 +86,23 @@ public class NewMain {
                 @Override
                 public void run() {
                     try {
+                        Usuario u;
                         sem.acquire();
-                        Usuario u = new Usuario(us.IdUsuario() + 1, "teste");
-                        us.salvar(u);
 
+                        if (us.IdUsuario() == 0) {
+                            u = new Usuario(ultimo, "teste");
+
+                        } else {
+                            u = new Usuario(us.IdUsuario()+1, "teste");
+                            ultimo = u.getId()+1;
+                        }
+                        us.salvar(u);
                         System.out.println("save: " + u.toString());
                         bufferatualizar.put(u.getId());
                         sem.release();
                     } catch (InterruptedException ex) {
-                        Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);
+                        Logger.getLogger(
+                                NewMain.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (SQLException ex) {
                         Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);
                     }
@@ -109,7 +118,7 @@ public class NewMain {
                         int id = bufferatualizar.take();
                         us.atualizar(id);
                         bufferdelete.put(id);
-                         System.out.println("atualizou: " + id);
+                        System.out.println("atualizou: " + id);
                     } catch (InterruptedException ex) {
                         Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
                     } catch (SQLException ex) {
@@ -125,7 +134,7 @@ public class NewMain {
                     try {
                         int id = bufferdelete.take();
                         us.deletar(id);
-                         System.out.println("deleted: " + id);
+                        System.out.println("deleted: " + id);
                         // if (id >= 100) {
                         //long tempofinal = System.currentTimeMillis() - tempo;
                         //   System.out.println("Tempo final: " + tempofinal);
@@ -148,11 +157,8 @@ public class NewMain {
             update.start();
             del.start();
 
-            
+        }
 
     }
 
 }
-
-}
-

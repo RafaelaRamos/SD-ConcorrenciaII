@@ -12,6 +12,8 @@ import java.sql.SQLException;
  */
 public class UsuarioService {
 
+    public int IdUsuario;
+
     public Connection getConnection() throws SQLException {
         Connection connection = DriverManager
                 .getConnection(
