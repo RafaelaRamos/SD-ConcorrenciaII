@@ -1,9 +1,3 @@
-
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package ifpb.edu.com.br.main;
 
 import ifpb.edu.com.br.usuario.Usuario;
@@ -15,8 +9,6 @@ import java.util.concurrent.Semaphore;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -35,8 +27,6 @@ public class NewMain {
     private static int ultimo = 1;
 
     public static void main(String[] args) throws SQLException, InterruptedException {
-
-        Controlador controlador = new Controlador();
 
         Runnable scan = new Runnable() {
 
@@ -77,7 +67,6 @@ public class NewMain {
                 }
             } finally {
                 lock.unlock();
-
             }
 
             Runnable salvar;
@@ -93,18 +82,15 @@ public class NewMain {
                             u = new Usuario(ultimo, "teste");
 
                         } else {
-                            u = new Usuario(us.IdUsuario()+1, "teste");
-                            ultimo = u.getId()+1;
+                            u = new Usuario(us.IdUsuario() + 1, "teste");
+                            ultimo = u.getId() + 1;
                         }
                         us.salvar(u);
                         System.out.println("save: " + u.toString());
                         bufferatualizar.put(u.getId());
                         sem.release();
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(
-                                NewMain.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException | SQLException ex) {
+                        ex.printStackTrace();
                     }
 
                 }
@@ -119,10 +105,8 @@ public class NewMain {
                         us.atualizar(id);
                         bufferdelete.put(id);
                         System.out.println("atualizou: " + id);
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException | SQLException ex) {
+                        ex.printStackTrace();
                     }
                 }
             };
@@ -139,10 +123,8 @@ public class NewMain {
                         //long tempofinal = System.currentTimeMillis() - tempo;
                         //   System.out.println("Tempo final: " + tempofinal);
                         //  }
-                    } catch (InterruptedException ex) {
-                        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
-                    } catch (SQLException ex) {
-                        Logger.getLogger(Controlador.class.getName()).log(Level.SEVERE, null, ex);
+                    } catch (InterruptedException | SQLException ex) {
+                        ex.printStackTrace();
                     }
                 }
             };

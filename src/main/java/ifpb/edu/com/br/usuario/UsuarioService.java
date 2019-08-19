@@ -24,7 +24,7 @@ public class UsuarioService {
         return connection;
     }
 
-    public synchronized void salvar(Usuario u) throws SQLException {
+    public void salvar(Usuario u) throws SQLException {
         String sql = "INSERT INTO usuario (id,nome) VALUES (?,?)";
         Connection con = getConnection();
         PreparedStatement stm = con.prepareStatement(sql);
@@ -35,7 +35,7 @@ public class UsuarioService {
         con.close();
     }
 
-    public synchronized void atualizar(int id) throws SQLException {
+    public void atualizar(int id) throws SQLException {
 
         String sql = "UPDATE usuario SET nome = ? WHERE id = ?";
         Connection con = getConnection();
@@ -47,7 +47,7 @@ public class UsuarioService {
         con.close();
     }
 
-    public synchronized void deletar(int id) throws SQLException {
+    public void deletar(int id) throws SQLException {
 
         String sql = "DELETE FROM usuario WHERE id = ?";
         Connection con = getConnection();
@@ -58,7 +58,7 @@ public class UsuarioService {
         con.close();
     }
 
-    public synchronized int IdUsuario() throws SQLException {
+    public int IdUsuario() throws SQLException {
 
         String sql = "SELECT id FROM usuario ORDER BY id DESC LIMIT 1";
         Connection con = getConnection();
